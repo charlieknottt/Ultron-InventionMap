@@ -156,7 +156,7 @@ function CircleNode({
             dominantBaseline="central"
             fill={isCenter ? "#0F172A" : "#F1F5F9"}
             fontSize={fontSize}
-            fontWeight={isCenter ? 700 : 500}
+            fontWeight={700}
             fontFamily="var(--font-inter), system-ui, sans-serif"
             style={{ pointerEvents: "none", userSelect: "none" }}
           >
@@ -606,7 +606,7 @@ export default function InventionMap() {
         viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
         className="absolute inset-0"
       >
-        <rect width={dimensions.width} height={dimensions.height} fill="#E0E5F0" />
+        <rect width={dimensions.width} height={dimensions.height} fill="#EDF0F7" />
 
         <g
           transform={`translate(${transform.x}, ${transform.y}) scale(${transform.scale})`}
@@ -618,7 +618,7 @@ export default function InventionMap() {
             const band3 = layout.r3 + layout.invR + 10;
             const radii = [band1, band2, band3];
             const innerRadii = [0, band1, band2];
-            const bandFills = ["#D2D8E8", "#D9DFEB", "#E0E5F0"];
+            const bandFills = ["#DFE4F0", "#E5EAF3", "#EDF0F7"];
             return radii.map((r, i) => {
               const inner = innerRadii[i];
               const mid = (inner + r) / 2;
