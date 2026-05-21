@@ -27,15 +27,22 @@ const BORDER_WIDTH = { core: 2.5, tech: 1.5, invention: 1 };
 const CORE_AREA_KEYS = ["enrollment", "detection", "latency"];
 
 function wrapText(text, maxCharsPerLine) {
-  const words = text.split(" ");
+  const tokens = [];
+  for (const word of text.split(" ")) {
+    const parts = word.split("-");
+    parts.forEach((part, i) => {
+      tokens.push(i < parts.length - 1 ? part + "-" : part);
+    });
+  }
   const lines = [];
   let current = "";
-  for (const word of words) {
-    if (current && (current + " " + word).length > maxCharsPerLine) {
+  for (const token of tokens) {
+    const sep = current && !current.endsWith("-") ? " " : "";
+    if (current && (current + sep + token).length > maxCharsPerLine) {
       lines.push(current);
-      current = word;
+      current = token;
     } else {
-      current = current ? current + " " + word : word;
+      current = current ? current + sep + token : token;
     }
   }
   if (current) lines.push(current);
