@@ -13,9 +13,9 @@ export default function ExpandableSection({ title, bullets, fullText, accentColo
   }, [expanded, fullText]);
 
   return (
-    <div className="mb-3 last:mb-0">
+    <div className="mb-2 last:mb-0">
       <h4
-        className="text-xs font-semibold uppercase tracking-wider mb-2"
+        className="text-[10px] font-semibold uppercase tracking-wider mb-1.5"
         style={{ color: accentColor }}
       >
         {title}
@@ -24,7 +24,7 @@ export default function ExpandableSection({ title, bullets, fullText, accentColo
         {bullets.map((bullet, i) => (
           <li
             key={i}
-            className="text-sm leading-relaxed flex gap-2"
+            className="text-xs leading-relaxed flex gap-2"
             style={{ color: "var(--text-secondary)" }}
           >
             <span
@@ -56,7 +56,7 @@ export default function ExpandableSection({ title, bullets, fullText, accentColo
           >
             <div ref={contentRef} className="pt-2">
               <p
-                className="text-sm leading-relaxed"
+                className="text-xs leading-relaxed"
                 style={{ color: "var(--text-muted)" }}
               >
                 {fullText}
