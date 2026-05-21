@@ -53,8 +53,8 @@ export default function Popup({ node, position, containerRect, onClose, accentCo
         left: adjustedPos ? `${adjustedPos.x}px` : `${position.x}px`,
         top: adjustedPos ? `${adjustedPos.y}px` : `${position.y - 200}px`,
         transform: "translateX(-50%)",
-        maxWidth: "380px",
-        minWidth: "300px",
+        maxWidth: "440px",
+        minWidth: "340px",
         opacity: adjustedPos ? 1 : 0,
       }}
       onClick={(e) => e.stopPropagation()}
@@ -66,15 +66,15 @@ export default function Popup({ node, position, containerRect, onClose, accentCo
           background: "var(--bg-surface)",
           borderColor: "var(--border)",
           boxShadow: `0 0 30px ${accentColor}15, 0 20px 40px rgba(0,0,0,0.1), 0 4px 12px rgba(0,0,0,0.06)`,
-          maxHeight: "70vh",
+          maxHeight: "85vh",
           display: "flex",
           flexDirection: "column",
         }}
       >
         <div className="p-4 overflow-y-auto">
-          <div className="flex items-start justify-between gap-3 mb-3">
+          <div className="flex items-start justify-between gap-3 mb-4">
             <h3
-              className="text-sm font-semibold leading-snug"
+              className="text-base font-semibold leading-snug"
               style={{ color: "var(--text-primary)" }}
             >
               {node.label}
@@ -137,7 +137,7 @@ export default function Popup({ node, position, containerRect, onClose, accentCo
 
           {isSummaryNode && (
             <div
-              className="pr-1 text-xs leading-relaxed"
+              className="pr-1 text-sm leading-relaxed"
               style={{
                 color: "var(--text-secondary)",
               }}

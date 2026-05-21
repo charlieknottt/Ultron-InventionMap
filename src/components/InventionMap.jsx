@@ -280,10 +280,13 @@ export default function InventionMap() {
     return () => el.removeEventListener("wheel", handleWheel);
   }, []);
 
+  const didDragRef = useRef(false);
+
   const handleMouseDown = useCallback(
     (e) => {
       if (e.button !== 0) return;
       if (e.target.closest(".circle-node") || e.target.closest(".popup-enter")) return;
+      didDragRef.current = false;
       setIsPanning(true);
       panStartRef.current = { x: e.clientX - transform.x, y: e.clientY - transform.y };
     },
@@ -293,6 +296,7 @@ export default function InventionMap() {
   const handleMouseMove = useCallback(
     (e) => {
       if (!isPanning) return;
+      didDragRef.current = true;
       setTransform((prev) => ({
         ...prev,
         x: e.clientX - panStartRef.current.x,
@@ -302,9 +306,13 @@ export default function InventionMap() {
     [isPanning]
   );
 
-  const handleMouseUp = useCallback(() => {
+  const handleMouseUp = useCallback((e) => {
+    if (isPanning && !didDragRef.current && !e.target.closest(".popup-enter") && !e.target.closest(".circle-node")) {
+      setActiveNode(null);
+      setPinned(false);
+    }
     setIsPanning(false);
-  }, []);
+  }, [isPanning]);
 
   const handleZoomIn = useCallback(() => {
     setTransform((prev) => {
