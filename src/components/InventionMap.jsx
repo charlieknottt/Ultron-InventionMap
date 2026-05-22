@@ -250,7 +250,7 @@ export default function InventionMap() {
           {layout.connections.map((c, i) => {
             const dx = c.x2 - c.x1, dy = c.y2 - c.y1, len = Math.sqrt(dx * dx + dy * dy);
             if (!len) return null; const ux = dx / len, uy = dy / len;
-            return <line key={i} x1={c.x1 + ux * c.r1} y1={c.y1 + uy * c.r1} x2={c.x2 - ux * c.r2} y2={c.y2 - uy * c.r2} stroke={COLORS[c.colorKey].rawBorder} strokeWidth={1} opacity={0.35} />;
+            return <line key={i} x1={c.x1 + ux * c.r1} y1={c.y1 + uy * c.r1} x2={c.x2 - ux * c.r2} y2={c.y2 - uy * c.r2} stroke={COLORS[c.colorKey].rawBorder} strokeWidth={1.5} opacity={0.6} />;
           })}
           {layout.nodes.map((n) => (
             <CircleNode key={n.id} x={n.x} y={n.y} radius={n.radius} label={n.shortLabel} color={COLORS[n.colorKey]} ring={n.ring}
