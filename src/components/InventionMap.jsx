@@ -185,7 +185,7 @@ export default function InventionMap() {
 
     const clusterArcs = nodes.filter(n => n.ring === "core").map(n => {
       const arcR = r3 + invR + 80;
-      const barHalf = 16, rInner = arcR - barHalf, rOuter = arcR + barHalf;
+      const barHalf = 24, rInner = arcR - barHalf, rOuter = arcR + barHalf;
       const sd1 = n.sectorStart + 3, sd2 = n.sectorEnd - 3;
       const angleDiff = sd2 - sd1;
       const largeArc = angleDiff > 180 ? 1 : 0;
@@ -262,7 +262,7 @@ export default function InventionMap() {
             <g key={`ca-${arc.id}`} className="cluster-arc" style={{ cursor: "pointer" }}
               onClick={(e) => { e.stopPropagation(); const cn = layout.nodes.find(n => n.id === arc.id); if (cn) handleNodeClick(cn); }}>
               <path d={arc.barPath} fill={COLORS[arc.colorKey].raw} stroke={COLORS[arc.colorKey].raw} strokeWidth={1} opacity={0.92} />
-              <text fill="#fff" fontSize={12} fontWeight={600}
+              <text fill="#fff" fontSize={15.5} fontWeight={700}
                 fontFamily="var(--font-inter), system-ui, sans-serif"
                 style={{ letterSpacing: "0.02em", pointerEvents: "none", userSelect: "none" }}>
                 <textPath href={`#arc-${arc.id}`} startOffset="50%" textAnchor="middle">
