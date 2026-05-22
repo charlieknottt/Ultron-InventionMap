@@ -59,12 +59,10 @@ export default function Popup({ node, colorKey, ring, onClose }) {
         style={{ boxShadow: "0 20px 50px -12px rgba(15,23,42,0.15), 0 0 0 1px rgba(15,23,42,0.05)", animation: "modalIn 0.2s cubic-bezier(0.16, 1, 0.3, 1)" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="h-[3px]" style={{ background: c.accent }} />
-
         <div className="max-h-[75vh] overflow-y-auto">
           <div className="px-7 pt-6 pb-7">
             {/* Header */}
-            <div className="flex items-start justify-between gap-4 mb-4">
+            <div className="flex items-start justify-between gap-4 mb-5">
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-[0.15em] mb-2" style={{ color: "#94a3b8" }}>
                   {RING_LABELS[ring] || "Invention"}
@@ -85,17 +83,6 @@ export default function Popup({ node, colorKey, ring, onClose }) {
                   <path d="M1 1L9 9M9 1L1 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                 </svg>
               </button>
-            </div>
-
-            {/* Cluster badge */}
-            <div className="mb-5">
-              <span
-                className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[11px] font-semibold"
-                style={{ background: c.bg, color: c.text, border: `1px solid ${c.border}` }}
-              >
-                <span className="w-[5px] h-[5px] rounded-full" style={{ background: c.accent }} />
-                {c.label}
-              </span>
             </div>
 
             {/* Center node: executive summary */}
