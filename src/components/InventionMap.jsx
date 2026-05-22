@@ -183,40 +183,33 @@ export default function InventionMap() {
       { inner: band3Inner, outer: band3Outer, fill: "rgba(148,163,184,0.07)" },
     ];
 
-    const clusterButtons = nodes.filter(n => n.ring === "core").map(n => {
-      const btnR = r3 + invR + 40;
-      const midDeg = (n.sectorStart + n.sectorEnd) / 2;
-      const midRad = (midDeg * Math.PI) / 180;
-      const bx = cx + btnR * Math.cos(midRad), by = cy + btnR * Math.sin(midRad);
-      const normMid = ((midDeg % 360) + 360) % 360;
-      let rotation = midDeg;
-      if (normMid > 90 && normMid < 270) rotation += 180;
-      return { id: n.id, colorKey: n.colorKey, x: bx, y: by, rotation };
-    });
-
     const clusterArcs = nodes.filter(n => n.ring === "core").map(n => {
       const arcR = r3 + invR + 35;
+      const barHalf = 14, rInner = arcR - barHalf, rOuter = arcR + barHalf;
+      const sd1 = n.sectorStart + 3, sd2 = n.sectorEnd - 3;
+      const angleDiff = sd2 - sd1;
+      const largeArc = angleDiff > 180 ? 1 : 0;
+
+      const a1 = (sd1 * Math.PI) / 180, a2 = (sd2 * Math.PI) / 180;
+      const ix1 = cx + rInner * Math.cos(a1), iy1 = cy + rInner * Math.sin(a1);
+      const ox1 = cx + rOuter * Math.cos(a1), oy1 = cy + rOuter * Math.sin(a1);
+      const ix2 = cx + rInner * Math.cos(a2), iy2 = cy + rInner * Math.sin(a2);
+      const ox2 = cx + rOuter * Math.cos(a2), oy2 = cy + rOuter * Math.sin(a2);
+      const barPath = `M ${ix1} ${iy1} A ${barHalf} ${barHalf} 0 0 0 ${ox1} ${oy1} A ${rOuter} ${rOuter} 0 ${largeArc} 1 ${ox2} ${oy2} A ${barHalf} ${barHalf} 0 0 0 ${ix2} ${iy2} A ${rInner} ${rInner} 0 ${largeArc} 0 ${ix1} ${iy1} Z`;
+
       const midAngle = ((n.sectorStart + n.sectorEnd) / 2 + 360) % 360;
       const normMid = midAngle > 180 ? midAngle - 360 : midAngle;
-      const isBottomHalf = normMid > 0 && normMid < 180;
+      const isBottom = normMid > 0 && normMid < 180;
+      const [tsd1, tsd2] = isBottom ? [sd2, sd1] : [sd1, sd2];
+      const ts = (tsd1 * Math.PI) / 180, te = (tsd2 * Math.PI) / 180;
+      const tx1 = cx + arcR * Math.cos(ts), ty1 = cy + arcR * Math.sin(ts);
+      const tx2 = cx + arcR * Math.cos(te), ty2 = cy + arcR * Math.sin(te);
+      const tSweep = isBottom ? 0 : 1;
 
-      let sd1 = n.sectorStart + 3, sd2 = n.sectorEnd - 3;
-      if (isBottomHalf) { const tmp = sd1; sd1 = sd2; sd2 = tmp; }
-
-      const s = (sd1 * Math.PI) / 180, e = (sd2 * Math.PI) / 180;
-      const x1 = cx + arcR * Math.cos(s), y1 = cy + arcR * Math.sin(s);
-      const x2 = cx + arcR * Math.cos(e), y2 = cy + arcR * Math.sin(e);
-      const angleDiff = Math.abs(sd2 - sd1);
-      const largeArc = angleDiff > 180 ? 1 : 0;
-      const sweep = isBottomHalf ? 0 : 1;
-
-      return {
-        id: n.id, colorKey: n.colorKey,
-        path: `M ${x1} ${y1} A ${arcR} ${arcR} 0 ${largeArc} ${sweep} ${x2} ${y2}`
-      };
+      return { id: n.id, colorKey: n.colorKey, barPath, textPath: `M ${tx1} ${ty1} A ${arcR} ${arcR} 0 ${largeArc} ${tSweep} ${tx2} ${ty2}` };
     });
 
-    return { nodes, connections, clusterArcs, clusterButtons, ringBands, cx, cy, r1, r2, r3, centerR, coreR, techR, invR };
+    return { nodes, connections, clusterArcs, ringBands, cx, cy, r1, r2, r3, centerR, coreR, techR, invR };
   }, [dimensions]);
 
   const handleNodeClick = useCallback((node) => {
@@ -235,7 +228,7 @@ export default function InventionMap() {
         <g transform={`translate(${transform.x}, ${transform.y}) scale(${transform.scale})`}>
           <defs>
             {layout.clusterArcs.map(arc => (
-              <path key={`arc-${arc.id}`} id={`arc-${arc.id}`} d={arc.path} fill="none" />
+              <path key={`arc-${arc.id}`} id={`arc-${arc.id}`} d={arc.textPath} fill="none" />
             ))}
           </defs>
           {/* Ring bands */}
@@ -265,15 +258,16 @@ export default function InventionMap() {
               onMouseEnter={() => handleMouseEnterNode(n)} onMouseLeave={handleMouseLeaveNode}
               onClick={(e) => { e.stopPropagation(); handleNodeClick(n); }} />
           ))}
-          {layout.clusterButtons.map(btn => (
-            <g key={`cb-${btn.id}`} transform={`translate(${btn.x}, ${btn.y}) rotate(${btn.rotation})`}
-              style={{ cursor: "pointer" }} className="cluster-btn"
-              onClick={(e) => { e.stopPropagation(); const cn = layout.nodes.find(n => n.id === btn.id); if (cn) handleNodeClick(cn); }}>
-              <rect x={-120} y={-13} width={240} height={26} rx={13} fill="#fff" stroke={COLORS[btn.colorKey].rawBorder} strokeWidth={1} opacity={0.9} />
-              <text x={0} y={1} textAnchor="middle" dominantBaseline="central"
-                fill={COLORS[btn.colorKey].raw} fontSize={9.5} fontWeight={600} fontFamily="var(--font-inter), system-ui, sans-serif"
-                style={{ letterSpacing: "0.01em", pointerEvents: "none", userSelect: "none" }}>
-                See how this cluster of inventions works together
+          {layout.clusterArcs.map(arc => (
+            <g key={`ca-${arc.id}`} className="cluster-arc" style={{ cursor: "pointer" }}
+              onClick={(e) => { e.stopPropagation(); const cn = layout.nodes.find(n => n.id === arc.id); if (cn) handleNodeClick(cn); }}>
+              <path d={arc.barPath} fill="#fff" stroke={COLORS[arc.colorKey].rawBorder} strokeWidth={1} opacity={0.9} />
+              <text fill={COLORS[arc.colorKey].raw} fontSize={10} fontWeight={600}
+                fontFamily="var(--font-inter), system-ui, sans-serif"
+                style={{ letterSpacing: "0.02em", pointerEvents: "none", userSelect: "none" }}>
+                <textPath href={`#arc-${arc.id}`} startOffset="50%" textAnchor="middle">
+                  See how this cluster of inventions works together
+                </textPath>
               </text>
             </g>
           ))}
