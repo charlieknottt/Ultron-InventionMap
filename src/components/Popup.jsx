@@ -1,163 +1,142 @@
 "use client";
-import { useRef, useEffect, useState } from "react";
-import ExpandableSection from "./ExpandableSection";
+import { useEffect, useRef } from "react";
 
-export default function Popup({ node, position, containerRect, onClose, accentColor, forceAbove }) {
-  const popupRef = useRef(null);
-  const [adjustedPos, setAdjustedPos] = useState(null);
-  const [arrowSide, setArrowSide] = useState("bottom");
-  const [arrowLeftPx, setArrowLeftPx] = useState(null);
+const COLOR_MAP = {
+  enrollment: { accent: "#059669", bg: "#ecfdf5", border: "#6ee7b7", text: "#065f46", label: "Product Enrollment" },
+  detection: { accent: "#2563eb", bg: "#eff6ff", border: "#93c5fd", text: "#1e40af", label: "Detection & Recognition" },
+  latency: { accent: "#d97706", bg: "#fffbeb", border: "#fcd34d", text: "#92400e", label: "Experience / Latency" },
+};
+
+const RING_LABELS = { center: "System", core: "Core Area", tech: "Technology Area", invention: "Invention" };
+
+function Paragraphs({ text, className = "" }) {
+  if (!text) return null;
+  return (
+    <div className={`text-[13.5px] leading-[1.7] ${className}`} style={{ color: "#475569" }}>
+      {text.split("\n\n").map((para, i) => (
+        <p key={i} className={i > 0 ? "mt-3" : ""}>{para}</p>
+      ))}
+    </div>
+  );
+}
+
+function SectionHeading({ children, color }) {
+  return (
+    <h4 className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color }}>
+      {children}
+    </h4>
+  );
+}
+
+function Divider() {
+  return <div className="my-5" style={{ borderTop: "1px solid #f1f5f9" }} />;
+}
+
+export default function Popup({ node, colorKey, ring, onClose }) {
+  const ref = useRef(null);
+  const c = COLOR_MAP[colorKey] || COLOR_MAP.detection;
 
   useEffect(() => {
-    if (!popupRef.current || !containerRect) return;
-    const popup = popupRef.current;
-    const rect = popup.getBoundingClientRect();
-    const padding = 16;
-
-    let x = position.x;
-    let y = position.y - position.radius - 16;
-    let arrow = "bottom";
-
-    if (!forceAbove && y - rect.height < padding) {
-      y = position.y + position.radius + 16;
-      arrow = "top";
-    }
-
-    const halfWidth = rect.width / 2;
-    if (x - halfWidth < padding) {
-      x = halfWidth + padding;
-    } else if (x + halfWidth > containerRect.width - padding) {
-      x = containerRect.width - halfWidth - padding;
-    }
-
-    let finalY = arrow === "bottom" ? y - rect.height : y;
-    finalY = Math.max(padding, Math.min(finalY, containerRect.height - rect.height - padding));
-    x = Math.max(halfWidth + padding, Math.min(x, containerRect.width - halfWidth - padding));
-
-    const arrowLeft = position.x - x + halfWidth;
-    const clampedArrowLeft = Math.max(24, Math.min(arrowLeft, rect.width - 24));
-
-    setAdjustedPos({ x, y: finalY });
-    setArrowSide(arrow);
-    setArrowLeftPx(clampedArrowLeft);
-  }, [position, containerRect, forceAbove]);
-
-  const isInvention = node.condensed;
-  const isSummaryNode = node.summary && !node.condensed;
+    const fn = (e) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", fn);
+    return () => window.removeEventListener("keydown", fn);
+  }, [onClose]);
 
   return (
     <div
-      ref={popupRef}
-      className="popup-enter absolute z-50 pointer-events-auto"
-      style={{
-        left: adjustedPos ? `${adjustedPos.x}px` : `${position.x}px`,
-        top: adjustedPos ? `${adjustedPos.y}px` : `${position.y - 200}px`,
-        transform: "translateX(-50%)",
-        maxWidth: "440px",
-        minWidth: "340px",
-        opacity: adjustedPos ? 1 : 0,
-      }}
-      onClick={(e) => e.stopPropagation()}
-      onWheel={(e) => e.stopPropagation()}
+      className="modal-overlay fixed inset-0 z-50 flex items-center justify-center p-6"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label={`${RING_LABELS[ring] || "Invention"}: ${node.label}`}
+      style={{ animation: "fadeIn 0.15s ease-out" }}
     >
+      <div className="absolute inset-0" style={{ background: "rgba(15,23,42,0.3)", backdropFilter: "blur(2px)" }} />
+
       <div
-        className="rounded-xl border shadow-2xl relative"
-        style={{
-          background: "var(--bg-surface)",
-          borderColor: "var(--border)",
-          boxShadow: `0 0 30px ${accentColor}15, 0 20px 40px rgba(0,0,0,0.1), 0 4px 12px rgba(0,0,0,0.06)`,
-          maxHeight: "85vh",
-          display: "flex",
-          flexDirection: "column",
-        }}
+        ref={ref}
+        className="relative w-full max-w-[560px] bg-white rounded-xl overflow-hidden"
+        style={{ boxShadow: "0 20px 50px -12px rgba(15,23,42,0.15), 0 0 0 1px rgba(15,23,42,0.05)", animation: "modalIn 0.2s cubic-bezier(0.16, 1, 0.3, 1)" }}
+        onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-4 overflow-y-auto">
-          <div className="flex items-start justify-between gap-3 mb-4">
-            <h3
-              className="text-base font-semibold leading-snug"
-              style={{ color: "var(--text-primary)" }}
-            >
-              {node.label}
-            </h3>
-            <button
-              onClick={onClose}
-              className="shrink-0 w-6 h-6 flex items-center justify-center rounded-full cursor-pointer transition-colors"
-              style={{
-                color: "var(--text-muted)",
-                background: "var(--bg-surface-hover)",
-              }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.color = "var(--text-primary)")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.color = "var(--text-muted)")
-              }
-            >
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                <path
-                  d="M1 1L9 9M9 1L1 9"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </button>
-          </div>
+        <div className="h-[3px]" style={{ background: c.accent }} />
 
-          {isInvention && (
-            <div>
-              <ExpandableSection
-                title="What it accomplishes"
-                bullets={node.condensed.accomplishes}
-                fullText={node.full?.accomplishes}
-                accentColor={accentColor}
-              />
-              <div
-                className="my-3 border-t"
-                style={{ borderColor: "var(--border)" }}
-              />
-              <ExpandableSection
-                title="Why it works"
-                bullets={node.condensed.works}
-                fullText={node.full?.works}
-                accentColor={accentColor}
-              />
-              <div
-                className="my-3 border-t"
-                style={{ borderColor: "var(--border)" }}
-              />
-              <ExpandableSection
-                title="Why it produces a superior result"
-                bullets={node.condensed.superior}
-                fullText={node.full?.superior}
-                accentColor={accentColor}
-              />
-            </div>
-          )}
-
-          {isSummaryNode && (
-            <div
-              className="pr-1 text-sm leading-relaxed"
-              style={{
-                color: "var(--text-secondary)",
-              }}
-            >
-              {node.summary.split("\n\n").map((para, i) => (
-                <p key={i} className={i > 0 ? "mt-3" : ""}>
-                  {para}
+        <div className="max-h-[75vh] overflow-y-auto">
+          <div className="px-7 pt-6 pb-7">
+            {/* Header */}
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.15em] mb-2" style={{ color: "#94a3b8" }}>
+                  {RING_LABELS[ring] || "Invention"}
                 </p>
-              ))}
+                <h2 className="text-[20px] font-semibold leading-tight" style={{ color: "#0f172a" }}>
+                  {node.label}
+                </h2>
+              </div>
+              <button
+                onClick={onClose}
+                className="shrink-0 w-11 h-11 -mr-2 -mt-1 flex items-center justify-center rounded-full cursor-pointer"
+                style={{ color: "#94a3b8" }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "#f1f5f9"; e.currentTarget.style.color = "#475569"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#94a3b8"; }}
+                aria-label="Close dialog"
+              >
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                  <path d="M1 1L9 9M9 1L1 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              </button>
             </div>
-          )}
-        </div>
 
-        <div
-          className={`popup-arrow ${arrowSide === "top" ? "popup-arrow-top" : ""}`}
-          style={{
-            background: "var(--bg-surface)",
-            left: arrowLeftPx != null ? `${arrowLeftPx}px` : "50%",
-          }}
-        />
+            {/* Cluster badge */}
+            <div className="mb-5">
+              <span
+                className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[11px] font-semibold"
+                style={{ background: c.bg, color: c.text, border: `1px solid ${c.border}` }}
+              >
+                <span className="w-[5px] h-[5px] rounded-full" style={{ background: c.accent }} />
+                {c.label}
+              </span>
+            </div>
+
+            {/* Center node: executive summary */}
+            {ring === "center" && (
+              <Paragraphs text={node.summary} />
+            )}
+
+            {/* Core area: description + cluster summary */}
+            {ring === "core" && (
+              <div>
+                <Paragraphs text={node.description} />
+                {node.summary && (
+                  <>
+                    <Divider />
+                    <SectionHeading color={c.accent}>How these inventions work together</SectionHeading>
+                    <Paragraphs text={node.summary} />
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* Tech area: summary text */}
+            {ring === "tech" && (
+              <Paragraphs text={node.summary} />
+            )}
+
+            {/* Invention: accomplishes / works / superior as plain paragraphs */}
+            {ring === "invention" && node.full && (
+              <div>
+                <SectionHeading color={c.accent}>What the invention accomplishes</SectionHeading>
+                <Paragraphs text={node.full.accomplishes} />
+                <Divider />
+                <SectionHeading color={c.accent}>Why it works</SectionHeading>
+                <Paragraphs text={node.full.works} />
+                <Divider />
+                <SectionHeading color={c.accent}>Why this produces a superior result</SectionHeading>
+                <Paragraphs text={node.full.superior} />
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
