@@ -244,7 +244,7 @@ export default function InventionMap() {
           })}
           {/* Ring labels */}
           {["CORE AREAS", "TECHNOLOGY AREAS", "INVENTIONS"].map((lbl, i) => {
-            const radii = [(layout.r1 + layout.coreR + layout.r2 - layout.techR) / 2, (layout.r2 + layout.techR + layout.r3 - layout.invR) / 2, layout.r3 - layout.invR + 15];
+            const radii = [(layout.r1 + layout.coreR + layout.r2 - layout.techR) / 2, (layout.r2 + layout.techR + layout.r3 - layout.invR) / 2, layout.r3 + layout.invR + 8];
             return <text key={lbl} x={layout.cx} y={layout.cy - radii[i]} textAnchor="middle" dominantBaseline="central" fill="#334155" fontSize={20} fontWeight={800} fontFamily="var(--font-inter), system-ui, sans-serif" letterSpacing="0.15em" style={{ userSelect: "none" }}>{lbl}</text>;
           })}
           {layout.connections.map((c, i) => {
