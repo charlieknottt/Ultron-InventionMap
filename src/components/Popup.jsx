@@ -7,7 +7,7 @@ const COLOR_MAP = {
   latency: { accent: "#d97706", bg: "#fffbeb", border: "#fcd34d", text: "#92400e", label: "Experience / Latency" },
 };
 
-const RING_LABELS = { center: "System", core: "Core Area", tech: "Technology Area", invention: "Invention" };
+const RING_LABELS = { center: "System", core: "Core Area", cluster: "Invention Cluster", tech: "Technology Area", invention: "Invention" };
 
 function Paragraphs({ text, className = "" }) {
   if (!text) return null;
@@ -90,17 +90,16 @@ export default function Popup({ node, colorKey, ring, onClose }) {
               <Paragraphs text={node.summary} />
             )}
 
-            {/* Core area: description + cluster summary */}
+            {/* Core area: description only */}
             {ring === "core" && (
+              <Paragraphs text={node.description} />
+            )}
+
+            {/* Cluster arc bar: how inventions work together */}
+            {ring === "cluster" && node.summary && (
               <div>
-                <Paragraphs text={node.description} />
-                {node.summary && (
-                  <>
-                    <Divider />
-                    <SectionHeading color={c.accent}>How these inventions work together</SectionHeading>
-                    <Paragraphs text={node.summary} />
-                  </>
-                )}
+                <SectionHeading color={c.accent}>How these inventions work together</SectionHeading>
+                <Paragraphs text={node.summary} />
               </div>
             )}
 

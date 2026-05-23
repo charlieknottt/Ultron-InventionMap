@@ -30,13 +30,13 @@ function wrapText(text, maxCharsPerLine) {
 }
 
 function CircleNode({ x, y, radius, label, color, ring, isActive, isHovered, onMouseEnter, onMouseLeave, onClick }) {
-  const maxChars = radius > 50 ? 16 : radius > 40 ? 12 : radius > 30 ? 10 : 9;
+  const maxChars = radius > 50 ? 14 : radius > 40 ? 11 : radius > 30 ? 9 : 8;
   const lines = wrapText(label, maxChars);
   const maxLines = radius > 50 ? 6 : radius > 40 ? 5 : radius > 30 ? 4 : 3;
   const displayLines = lines.length > maxLines
     ? [...lines.slice(0, maxLines - 1), lines.slice(maxLines - 1).join(" ").slice(0, maxChars - 1) + "..."]
     : lines;
-  const fontSize = ring === "center" ? 13 : ring === "core" ? 12.5 : ring === "tech" ? 10 : 9;
+  const fontSize = ring === "center" ? 16 : ring === "core" ? 16 : ring === "tech" ? 14 : 12;
   const lineHeight = fontSize + 3;
   const startY = -(displayLines.length - 1) * lineHeight * 0.5;
   const active = isActive || isHovered;
@@ -245,7 +245,7 @@ export default function InventionMap() {
           {/* Ring labels */}
           {["CORE AREAS", "TECHNOLOGY AREAS", "INVENTIONS"].map((lbl, i) => {
             const radii = [(layout.r1 + layout.coreR + layout.r2 - layout.techR) / 2, (layout.r2 + layout.techR + layout.r3 - layout.invR) / 2, layout.r3 + layout.invR + 18];
-            return <text key={lbl} x={layout.cx} y={layout.cy - radii[i]} textAnchor="middle" dominantBaseline="central" fill="#334155" fontSize={16} fontWeight={800} fontFamily="var(--font-inter), system-ui, sans-serif" letterSpacing="0.15em" style={{ userSelect: "none" }}>{lbl}</text>;
+            return <text key={lbl} x={layout.cx} y={layout.cy - radii[i]} textAnchor="middle" dominantBaseline="central" fill="#334155" fontSize={20} fontWeight={800} fontFamily="var(--font-inter), system-ui, sans-serif" letterSpacing="0.15em" style={{ userSelect: "none" }}>{lbl}</text>;
           })}
           {layout.connections.map((c, i) => {
             const dx = c.x2 - c.x1, dy = c.y2 - c.y1, len = Math.sqrt(dx * dx + dy * dy);
@@ -260,9 +260,9 @@ export default function InventionMap() {
           ))}
           {layout.clusterArcs.map(arc => (
             <g key={`ca-${arc.id}`} className="cluster-arc" style={{ cursor: "pointer" }}
-              onClick={(e) => { e.stopPropagation(); const cn = layout.nodes.find(n => n.id === arc.id); if (cn) handleNodeClick(cn); }}>
+              onClick={(e) => { e.stopPropagation(); const cn = layout.nodes.find(n => n.id === arc.id); if (cn) handleNodeClick({ ...cn, ring: "cluster" }); }}>
               <path d={arc.barPath} fill={COLORS[arc.colorKey].raw} stroke={COLORS[arc.colorKey].raw} strokeWidth={1} opacity={0.92} />
-              <text fill="#fff" fontSize={15.5} fontWeight={700}
+              <text fill="#fff" fontSize={16} fontWeight={700}
                 fontFamily="var(--font-inter), system-ui, sans-serif"
                 style={{ letterSpacing: "0.02em", pointerEvents: "none", userSelect: "none" }}>
                 <textPath href={`#arc-${arc.id}`} startOffset="50%" textAnchor="middle">
