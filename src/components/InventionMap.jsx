@@ -124,7 +124,7 @@ export default function InventionMap() {
   const layout = useMemo(() => {
     const { width, height } = dimensions;
     const cx = width / 2, cy = height / 2, minDim = Math.min(width, height);
-    const r1 = minDim * 0.26, r2 = minDim * 0.52, r3 = minDim * 0.72;
+    const r1 = minDim * 0.26, r2 = minDim * 0.58, r3 = minDim * 0.76;
     const coreAreas = inventionData.coreAreas;
     const totalInv = coreAreas.reduce((s, ca) => s + ca.techAreas.reduce((s2, ta) => s2 + ta.inventions.length, 0), 0);
     const gapDeg = 14, availDeg = 360 - gapDeg * coreAreas.length;
