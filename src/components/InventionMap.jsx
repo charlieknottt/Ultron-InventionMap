@@ -30,7 +30,7 @@ function wrapText(text, maxCharsPerLine) {
 }
 
 function CircleNode({ x, y, radius, label, color, ring, isActive, isHovered, onMouseEnter, onMouseLeave, onClick }) {
-  const maxChars = radius > 50 ? 14 : radius > 40 ? 11 : radius > 30 ? 9 : 8;
+  const maxChars = radius > 65 ? 12 : radius > 50 ? 11 : radius > 40 ? 10 : 9;
   const lines = wrapText(label, maxChars);
   const maxLines = radius > 50 ? 6 : radius > 40 ? 5 : radius > 30 ? 4 : 3;
   const displayLines = lines.length > maxLines
@@ -124,7 +124,7 @@ export default function InventionMap() {
   const layout = useMemo(() => {
     const { width, height } = dimensions;
     const cx = width / 2, cy = height / 2, minDim = Math.min(width, height);
-    const r1 = minDim * 0.26, r2 = minDim * 0.46, r3 = minDim * 0.62;
+    const r1 = minDim * 0.26, r2 = minDim * 0.52, r3 = minDim * 0.72;
     const coreAreas = inventionData.coreAreas;
     const totalInv = coreAreas.reduce((s, ca) => s + ca.techAreas.reduce((s2, ta) => s2 + ta.inventions.length, 0), 0);
     const gapDeg = 14, availDeg = 360 - gapDeg * coreAreas.length;
@@ -184,7 +184,7 @@ export default function InventionMap() {
     ];
 
     const clusterArcs = nodes.filter(n => n.ring === "core").map(n => {
-      const arcR = r3 + invR + 80;
+      const arcR = r3 + invR + 55;
       const barHalf = 24, rInner = arcR - barHalf, rOuter = arcR + barHalf;
       const sd1 = n.sectorStart + 3, sd2 = n.sectorEnd - 3;
       const angleDiff = sd2 - sd1;
