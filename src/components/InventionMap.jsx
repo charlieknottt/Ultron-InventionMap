@@ -133,7 +133,7 @@ export default function InventionMap() {
     const scaled = sectors.map((s) => s * sf);
 
     const nodes = [], connections = [];
-    const centerR = minDim * 0.085, coreR = minDim * 0.085, techR = minDim * 0.06, invR = minDim * 0.058;
+    const centerR = minDim * 0.085, coreR = minDim * 0.085, techR = minDim * 0.072, invR = minDim * 0.058;
 
     nodes.push({ id: "center", x: cx, y: cy, radius: centerR, label: inventionData.center.label, shortLabel: "Checkout Product Recognition", data: inventionData.center, ring: "center", colorKey: "detection" });
 
