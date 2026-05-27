@@ -1,4 +1,3 @@
-import Image from "next/image";
 import InventionMap from "../components/InventionMap";
 
 export default function Home() {
@@ -9,20 +8,9 @@ export default function Home() {
         style={{ borderColor: "var(--border)", background: "var(--bg)" }}
       >
         <div className="flex items-center gap-5">
-          <a href="https://ultronai.com/" target="_blank" rel="noopener noreferrer">
-            <Image
-              src="/ultronai-logo.png"
-              alt="UltronAI"
-              width={400}
-              height={112}
-              priority
-              style={{ height: "36px", width: "auto" }}
-            />
-          </a>
-          <div className="w-px h-8" style={{ background: "var(--border)" }} />
           <div>
-            <h1 className="text-lg font-semibold tracking-tight" style={{ color: "var(--text)" }}>
-              Invention Map
+            <h1 className="text-lg font-semibold tracking-tight" style={{ color: "#000000" }}>
+              UltronAI Invention Map
             </h1>
             <p className="text-xs" style={{ color: "var(--text-muted)" }}>
               22 inventions powering grocery-scale checkout product recognition
